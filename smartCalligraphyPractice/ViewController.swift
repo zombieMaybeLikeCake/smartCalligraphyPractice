@@ -209,7 +209,13 @@ class ViewController: UIViewController, UITextFieldDelegate{
             in guard data != nil
             else{
                 print("error data")
+                
                 return}
+            self.image = UIImage(data: data!)
+                DispatchQueue.main.async {
+                    self.showWordImageView.image=self.image
+                }
+
 
         }).resume()
 //        UIImageWriteToSavedPhotosAlbum(newImg, nil, nil, nil)
