@@ -39,13 +39,13 @@ class ViewController: UIViewController, UITextFieldDelegate{
 //        setuptextfield()
 //        sampleTextField.delegate = self
 //        self.view.addSubview(sampleTextField)
-//        setupButton()
-//        // 设置 canvasView 为创建的 UIView
-//        getImage()
-//        nextButton.addTarget(self, action: #selector(nextaction), for: .touchDown)
-//        setcheckButton()
-//        checkButton.addTarget(self, action: #selector(checkaction), for: .touchDown)
-//        setshowkButton()
+        setupButton()
+        // 设置 canvasView 为创建的 UIView
+        getImage()
+        nextButton.addTarget(self, action: #selector(nextaction), for: .touchDown)
+        setcheckButton()
+        checkButton.addTarget(self, action: #selector(checkaction), for: .touchDown)
+        setshowkButton()
         // 文字顏色
         canvasView = canvas
         
