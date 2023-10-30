@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA6B18B42AEFE1B1004DAA91 /* tabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6B18B32AEFE1B1004DAA91 /* tabController.swift */; };
+		EA6B18B62AEFFEDF004DAA91 /* setViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6B18B52AEFFEDF004DAA91 /* setViewController.swift */; };
+		EA6B18B82AEFFEF8004DAA91 /* setwordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6B18B72AEFFEF8004DAA91 /* setwordViewController.swift */; };
 		EA9AA4F82AE65A58005D4B64 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */; };
 		EA9AA4FA2AE65A58005D4B64 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */; };
 		EA9AA4FC2AE65A58005D4B64 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */; };
@@ -35,6 +38,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EA6B18B32AEFE1B1004DAA91 /* tabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabController.swift; sourceTree = "<group>"; };
+		EA6B18B52AEFFEDF004DAA91 /* setViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setViewController.swift; sourceTree = "<group>"; };
+		EA6B18B72AEFFEF8004DAA91 /* setwordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setwordViewController.swift; sourceTree = "<group>"; };
 		EA9AA4F42AE65A58005D4B64 /* smartCalligraphyPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = smartCalligraphyPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -100,7 +106,10 @@
 				EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */,
 				EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */,
 				EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */,
+				EA6B18B32AEFE1B1004DAA91 /* tabController.swift */,
 				EA9AA5002AE65A5A005D4B64 /* Assets.xcassets */,
+				EA6B18B52AEFFEDF004DAA91 /* setViewController.swift */,
+				EA6B18B72AEFFEF8004DAA91 /* setwordViewController.swift */,
 				EA9AA5022AE65A5A005D4B64 /* LaunchScreen.storyboard */,
 				EA9AA5052AE65A5A005D4B64 /* Info.plist */,
 			);
@@ -255,8 +264,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA9AA4FC2AE65A58005D4B64 /* ViewController.swift in Sources */,
+				EA6B18B42AEFE1B1004DAA91 /* tabController.swift in Sources */,
 				EA9AA4F82AE65A58005D4B64 /* AppDelegate.swift in Sources */,
 				EA9AA4FA2AE65A58005D4B64 /* SceneDelegate.swift in Sources */,
+				EA6B18B62AEFFEDF004DAA91 /* setViewController.swift in Sources */,
+				EA6B18B82AEFFEF8004DAA91 /* setwordViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

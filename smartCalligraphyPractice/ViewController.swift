@@ -16,41 +16,32 @@ class ViewController: UIViewController, UITextFieldDelegate{
     @IBOutlet var showWordImageView: UIImageView!
     var image:UIImage?
     var strokeColor: UIColor = .black // Set your desired stroke color here
-    var lineWidth: CGFloat = 10.0 // Set your desired line width
+    var lineWidth: CGFloat = 4.0 // Set your desired line width
     var viewsize:CGSize!
     var drawingPaths: [UIBezierPath] = []
     var multipledrawingPaths:[[UIBezierPath]]=[]
     var IP:String = "http://192.168.0.103:8080"
     var imagenum:Int = 290
     var hopenum:Int=0
+    var test:String!
+    var viewheight:CGFloat = 0.0
+    var viewwidth:CGFloat = 0.0
     override func viewDidLoad() {
-        
         super.viewDidLoad()
-        
         let fullScreenSize = UIScreen.main.bounds.size
-        viewsize=CGSize(width: fullScreenSize.width, height: fullScreenSize.height/2)
-        let canvas = UIView(frame: CGRect(x: 0, y: fullScreenSize.height/2, width: fullScreenSize.width, height: fullScreenSize.height/2))
+        viewsize=CGSize(width: fullScreenSize.width, height: fullScreenSize.height)
+        let canvas = UIView(frame: CGRect(x: 0, y:0 , width: fullScreenSize.width, height: fullScreenSize.height))
         canvas.backgroundColor = UIColor.white // 设置背景颜色
-        self.view.addSubview(canvas) // 添加到当前视图控制器的视图上
-        let imageviewheight=(fullScreenSize.height/2)
+       // 添加到当前视图控制器的视图上
+        let imageviewheight=(fullScreenSize.height)
+        self.viewheight=fullScreenSize.height
+        self.viewwidth=fullScreenSize.width
         showWordImageView=UIImageView(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: imageviewheight))
-        self.view.addSubview(showWordImageView)
-//        sampleTextField=UITextField(frame: CGRect(x: 10, y: 10, width: 300, height: 40))
-//        setuptextfield()
-//        sampleTextField.delegate = self
-//        self.view.addSubview(sampleTextField)
-        setupButton()
-        // 设置 canvasView 为创建的 UIView
-        getImage()
-        nextButton.addTarget(self, action: #selector(nextaction), for: .touchDown)
-        setcheckButton()
-        checkButton.addTarget(self, action: #selector(checkaction), for: .touchDown)
-        setshowkButton()
         // 文字顏色
         canvasView = canvas
-        
-//        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.dismissKeyboard))
-//            self.view.addGestureRecognizer(tap)
+       
+        drawWordForm(screenwidth: fullScreenSize.width,screenheight: fullScreenSize.height)
+        self.view.addSubview(canvas)
     }
     func setuptextfield(){
            sampleTextField.placeholder = "Enter text here"
@@ -145,7 +136,6 @@ class ViewController: UIViewController, UITextFieldDelegate{
         strokeLayer.path = path.cgPath
         strokeLayer.strokeColor = strokeColor.cgColor
         strokeLayer.lineWidth = path.lineWidth
-
         // Convert CGLineCap to String
         switch path.lineCapStyle {
         case .butt:
@@ -157,7 +147,6 @@ class ViewController: UIViewController, UITextFieldDelegate{
         @unknown default:
             strokeLayer.lineCap = .butt // Default to .butt for unknown cases
         }
-
         // Convert CGLineJoin to String
         switch path.lineJoinStyle {
         case .miter:
@@ -169,10 +158,70 @@ class ViewController: UIViewController, UITextFieldDelegate{
         @unknown default:
             strokeLayer.lineJoin = .miter // Default to .miter for unknown cases
         }
-
         canvasView.layer.addSublayer(strokeLayer)
     }
-
+    func drawWordForm(screenwidth:CGFloat,screenheight:CGFloat){
+        var wordlength:CGFloat = 75
+        var bottomlength:CGFloat = 20.0
+        var rightlength:CGFloat = 10.0
+        var rowwordnum=8
+        var colwordnum=12
+        var formLineWidth:CGFloat = 1
+        var toplength:CGFloat = (screenheight-CGFloat(colwordnum)*wordlength)/2
+        var leftlength:CGFloat = (screenwidth-CGFloat(rowwordnum)*wordlength)/2
+        let formLayer = CAShapeLayer()
+        let dasfLineLayer = CAShapeLayer()
+        formLayer.lineCap = .round
+        formLayer.lineJoin = .round
+        formLayer.lineWidth = formLineWidth
+        formLayer.strokeColor = UIColor.systemBlue.cgColor
+        let formPath = UIBezierPath()
+        formPath.lineCapStyle = .round
+        formPath.lineJoinStyle = .round
+        
+        for index in 0...colwordnum{
+            formPath.move(to: CGPoint(x:leftlength, y:toplength+wordlength*CGFloat(index)))
+            formPath.addLine(to: CGPoint(x:screenwidth-leftlength,y:toplength+wordlength*CGFloat(index)))
+            bottomlength = toplength+wordlength*CGFloat(index)
+        }
+        for index in 0...rowwordnum{
+            formPath.move(to: CGPoint(x:leftlength+wordlength*CGFloat(index), y:toplength))
+            formPath.addLine(to: CGPoint(x:leftlength+wordlength*CGFloat(index),y:bottomlength))
+        }
+        
+        formLayer.path = formPath.cgPath
+        canvasView.layer.addSublayer(formLayer)
+        for index in 1...rowwordnum{
+            let image = UIImage(named: String(index))
+            let imageLayer = CALayer()
+            imageLayer.backgroundColor = UIColor.clear.cgColor
+            imageLayer.bounds = CGRect(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2,width:wordlength-5, height:wordlength-5)
+            imageLayer.position = CGPoint(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2)
+            imageLayer.contents =  image?.cgImage
+            canvasView.layer.addSublayer(imageLayer)
+        }
+        
+        let dashLineLayer = CAShapeLayer()
+        dashLineLayer.strokeColor = UIColor.systemBlue.cgColor
+        dashLineLayer.lineCap = .round
+        dashLineLayer.lineJoin = .round
+        dashLineLayer.lineWidth = 0.5
+        let dashPath = UIBezierPath()
+        for index in 1...colwordnum*3{
+            dashPath.move(to: CGPoint(x:leftlength, y:toplength+wordlength*CGFloat(index)/3))
+            dashPath.addLine(to: CGPoint(x:screenwidth-leftlength,y:toplength+wordlength*CGFloat(index)/3))
+            bottomlength = toplength+wordlength*CGFloat(index)/3
+        }
+        for index in 1...rowwordnum*3{
+            dashPath.move(to: CGPoint(x:leftlength+wordlength*CGFloat(index)/3, y:toplength))
+            dashPath.addLine(to: CGPoint(x:leftlength+wordlength*CGFloat(index)/3,y:bottomlength))
+        }
+//        dashPath.setLineDash(dashConfig, count:dashConfig.count, phase: 0)
+        let dashpattern:[NSNumber] = [2,2]
+        dashLineLayer.lineDashPattern=dashpattern
+        dashLineLayer.path=dashPath.cgPath
+        canvasView.layer.addSublayer(dashLineLayer)
+    }
     // Save the last stroke as an independent image
     func saveLastStrokeAsImage() {
         let fmt = UIGraphicsImageRendererFormat()
@@ -186,7 +235,7 @@ class ViewController: UIViewController, UITextFieldDelegate{
                    let bez = drawingPaths.last
                    ctx.cgContext.setFillColor(UIColor.clear.cgColor)
                    ctx.cgContext.setStrokeColor(strokeColor.cgColor)
-                   ctx.cgContext.setLineWidth(4)
+                   ctx.cgContext.setLineWidth(lineWidth)
                    ctx.cgContext.setLineJoin(.round)
                    ctx.cgContext.setLineCap(.round)
                    ctx.cgContext.addPath(bez!.cgPath)
@@ -205,18 +254,27 @@ class ViewController: UIViewController, UITextFieldDelegate{
         urlRequest.httpMethod="POST"
         urlRequest.httpBody=parmData
         urlRequest.setValue("application/x-www-urlencoded", forHTTPHeaderField: "Content-Type")
-        URLSession.shared.dataTask(with: urlRequest, completionHandler: {(data,response,error)
-            in guard data != nil
-            else{
-                print("error data")
-                
-                return}
-            self.image = UIImage(data: data!)
-                DispatchQueue.main.async {
-                    self.showWordImageView.image=self.image
-                }
-
-
+        URLSession.shared.dataTask(with: urlRequest, completionHandler: {(data,response,error) in
+            guard let data = data, error == nil else {
+                           print("出现错误：\(error?.localizedDescription ?? "未知错误")")
+                           return
+                       }
+                       
+            if let image = UIImage(data: data) {
+                       // 在主线程中更新 UI
+                       DispatchQueue.main.async {
+                           let imageLayer = CALayer()
+                           imageLayer.backgroundColor = UIColor.clear.cgColor
+                           imageLayer.bounds = CGRect(x:0, y: 0 , width: self.viewwidth, height:self.viewheight)
+                           imageLayer.position = CGPoint(x:self.viewwidth/2,y:self.viewheight/2)
+                           imageLayer.contents =  image.cgImage
+                           self.canvasView.layer.addSublayer(imageLayer)
+                       }
+                   } else {
+                           print(data)
+                           print("无法将接收到的数据转换为图像")
+                       }
+            
         }).resume()
 //        UIImageWriteToSavedPhotosAlbum(newImg, nil, nil, nil)
         
