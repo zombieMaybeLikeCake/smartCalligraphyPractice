@@ -9,9 +9,12 @@ import UIKit
 
 class tabController: UITabBarController{
     var Ismainview:Bool=true
+    var setviewc:UIViewController!
+    var mainviewc:UIViewController!
     @objc func changtosetView(_ sender: UIBarButtonItem){
         Ismainview=false
-        let setview = self.createNav(vc: setViewController())
+        setviewc = setViewController()
+        let setview = self.createNav(vc:setviewc)
         self.setViewControllers([setview], animated: true)
         
     }
@@ -23,7 +26,7 @@ class tabController: UITabBarController{
     }
     @objc func changtoMainView(_ sender: UIBarButtonItem){
         Ismainview=true
-        let mainview = self.createNav(vc: ViewController())
+        let mainview = self.createNav(vc:mainviewc)
         self.setViewControllers([mainview], animated: true)
     }
     override func viewDidLoad() {
@@ -31,7 +34,8 @@ class tabController: UITabBarController{
         self.setupTabs()
     }
     private func setupTabs(){
-        let mainview = self.createNav(vc: ViewController())
+        mainviewc=ViewController()
+        let mainview = self.createNav(vc:mainviewc)
         self.setViewControllers([mainview], animated: true)
         
     }
@@ -42,7 +46,7 @@ class tabController: UITabBarController{
         let setWordImage = UIImage(systemName: "textformat")
         let backImage = UIImage(systemName:"arrow.uturn.backward")
         if Ismainview {
-            nav.viewControllers.first?.navigationItem.rightBarButtonItem = UIBarButtonItem(image:setImage, style: .plain, target: self, action: #selector(changtosetwordView(_:)))
+            nav.viewControllers.first?.navigationItem.rightBarButtonItem = UIBarButtonItem(image:setImage, style: .plain, target: self, action: #selector(changtosetView(_:)))
 //            nav.viewControllers.first?.navigationItem.leftBarButtonItem = UIBarButtonItem(image:setWordImage, style: .plain, target:self, action:#selector(changtosetView(_:)))
         }
         else{

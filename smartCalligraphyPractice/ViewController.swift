@@ -6,10 +6,65 @@
 //
 
 import UIKit
-class ViewController: UIViewController, UITextFieldDelegate{
+
+struct Stroke: Codable {
+    let xPosition: Double
+    let yPosition: Double
+    let width:Double
+    let height:Double
+    let image:String
+}
+protocol ImageDownloadDelegate: class {
+    func imageDownloadDidStart()
+    func imageDownloadDidFinish(image:[String])
+    func imageDownloadDidFailWithError(error: Error)
+}
+protocol DetailViewControllerDelegate: AnyObject {
+    func hideDetailViewController()
+}
+class ImageDownloader {
+    weak var delegate: ImageDownloadDelegate?
+    
+    func downloadImage(from urlString: String) {
+        guard let url = URL(string: urlString) else {
+            // URL不合法
+            delegate?.imageDownloadDidFailWithError(error: NSError(domain: "InvalidURL", code: 0, userInfo: nil))
+            return
+        }
+        
+        // 在开始下载时通知代理
+        delegate?.imageDownloadDidStart()
+        
+        let task = URLSession.shared.dataTask(with: url) { [self] data, _, error in
+            if let error = error {
+                // 下载失败时通知代理
+                delegate?.imageDownloadDidFailWithError(error: error)
+            } else if let data = data {
+                // 下载成功时通知代理
+                do{
+                    let decoder = JSONDecoder()
+                    let images = try decoder.decode(imagedata.self, from: data)
+                    delegate?.imageDownloadDidFinish(image:images.data)
+                }
+                catch let parseError {
+                    print("JSON Error")
+                    
+                }
+                
+            }
+        }
+        task.resume()
+    }
+}
+//class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat,ImageDownloadDelegate{
+class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat, DetailViewControllerDelegate {
+//    var loadingViewController: LoadingViewController?
+//    let imageDownloader = ImageDownloader()
+    var LoadingViewController: LoadingViewController?
     let nextButton = UIButton()
     let checkButton = UIButton()
     let showindexButton = UIButton()
+    var settingButton:UIButton!
     var sampleTextField : UITextField!
     var nowIndextext: UILabel!
     @IBOutlet var canvasView: UIView! // The drawing canvas
@@ -26,22 +81,96 @@ class ViewController: UIViewController, UITextFieldDelegate{
     var test:String!
     var viewheight:CGFloat = 0.0
     var viewwidth:CGFloat = 0.0
+    var rowwordnum:Int = 8
+    var colwordnum:Int = 12
+    var wordlength:CGFloat = 75
+    var goalStrings:[String]=[]
+    var showFormFlag:Bool = true
+    var finalLocation:CGPoint!
+    var startLocation:CGPoint!
+    var showStroke=true
     override func viewDidLoad() {
         super.viewDidLoad()
+//
+        
+//        self.view.backgroundColor = UIColor.white
         let fullScreenSize = UIScreen.main.bounds.size
         viewsize=CGSize(width: fullScreenSize.width, height: fullScreenSize.height)
-        let canvas = UIView(frame: CGRect(x: 0, y:0 , width: fullScreenSize.width, height: fullScreenSize.height))
+        let canvas = UIView(frame: CGRect(x: 0, y:50 , width: fullScreenSize.width, height: fullScreenSize.height))
         canvas.backgroundColor = UIColor.white // 设置背景颜色
-       // 添加到当前视图控制器的视图上
         let imageviewheight=(fullScreenSize.height)
         self.viewheight=fullScreenSize.height
         self.viewwidth=fullScreenSize.width
-        showWordImageView=UIImageView(frame: CGRect(x: 0, y: 0, width: fullScreenSize.width, height: imageviewheight))
-        // 文字顏色
+        showWordImageView=UIImageView(frame: CGRect(x: 0, y: 60, width: fullScreenSize.width, height: imageviewheight))
         canvasView = canvas
-       
         drawWordForm(screenwidth: fullScreenSize.width,screenheight: fullScreenSize.height)
         self.view.addSubview(canvas)
+        settingButton=UIButton(frame: CGRect(x:fullScreenSize.width-60 , y:20 , width:30, height:30))
+        setupconfirmButton()
+         
+                // 显示DestinationViewController
+        
+
+    }
+    func setvalue( _ controller: setViewController,wordlengt:CGFloat,colnum:Int,words:[String],flag:Bool,strokefalg :Bool){
+        colwordnum=colnum
+        wordlength=wordlengt
+        goalStrings=words
+        showFormFlag=flag
+        showStroke=strokefalg
+//        print(goalStrings)
+//        print(colnum)
+//        let urlString = IP+"/?goalword="+self.goalString
+//        let goodurl = urlString.addingPercentEncoding(withAllowedCharacters:.urlQueryAllowed)
+////        imageDownloader.downloadImage(from: goodurl!)
+//        guard let url : URL = URL(string: goodurl!)
+//        else{
+//            print("get image error")
+//            return
+//        }
+//        let task = URLSession.shared.dataTask(with: url) { (data, response, error)   in
+//            print(url)
+//                if let data = data {
+////                    DispatchQueue.main.async{
+//                        do{
+////                            let waitview = smartCalligraphyPractice.LoadingViewController()
+////                            waitview.delegate = self
+////                            self.showDetailViewController(waitview, sender: self)
+////                            self.present(waitview, animated: true, completion: nil)
+//                            let decoder = JSONDecoder()
+//                            let images = try decoder.decode(imagedata.self, from: data)
+//                            self.goalStrings = images.data
+////                            usleep(2000000)
+////                            self.dismiss(animated: true, completion: nil)
+//
+//                        }
+//                        //                        self.label.text = "test"
+//
+//                        catch let parseError {
+//                            print("JSON Error")
+//                        }
+////                    }
+//                }
+//        }
+//        task.resume()
+//        print("this content:"+goalString)
+        let fullScreenSize = UIScreen.main.bounds.size
+        drawingPaths.removeAll() // 移除所有筆劃
+        canvasView.layer.sublayers = nil // 移除所有已繪製的筆劃圖層
+        if showFormFlag {
+//            usleep(2000000)
+            if goalStrings == []
+            {
+                rowwordnum = 8
+            }
+            else{
+                rowwordnum = goalStrings.count
+            }
+            if showFormFlag {
+                drawWordForm(screenwidth: fullScreenSize.width,screenheight: fullScreenSize.height)
+            }
+            
+        }
     }
     func setuptextfield(){
            sampleTextField.placeholder = "Enter text here"
@@ -61,8 +190,8 @@ class ViewController: UIViewController, UITextFieldDelegate{
         return num!
     }
     @objc func dismissKeyboard() {
-            self.view.endEditing(true)
-        }
+        self.view.endEditing(true)
+    }
         
         // 當按下右下角的return鍵時觸發
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -101,10 +230,18 @@ class ViewController: UIViewController, UITextFieldDelegate{
             currentPath.lineWidth = lineWidth
             currentPath.lineCapStyle = .round
             currentPath.lineJoinStyle = .round
-            let location = touch.location(in: canvasView)
-            currentPath.move(to: location)
+            startLocation = touch.location(in: canvasView)
+            
+            currentPath.move(to: startLocation)
             drawingPaths.append(currentPath)
-            drawOnCanvas()
+            
+            if showFormFlag {
+                drawOnCanvas()
+            }
+            else if showStroke==false{
+                drawOnCanvas()
+            }
+            
         }
     }
 
@@ -118,15 +255,21 @@ class ViewController: UIViewController, UITextFieldDelegate{
 //            currentPath.lineWidth = lineWidth
 //            currentPath.lineCapStyle = .round
 //            currentPath.lineJoinStyle = .round
-            drawOnCanvas()
-            
+            if showFormFlag {
+                drawOnCanvas()
+            }
+            else if showStroke==false{
+                drawOnCanvas()
+            }
         }
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first, let path = drawingPaths.last {
-            let currentLocation = touch.location(in: canvasView)
-            path.addLine(to: currentLocation)
-            saveLastStrokeAsImage()
+            finalLocation = touch.location(in: canvasView)
+            path.addLine(to: finalLocation)
+            if showStroke {
+                saveLastStrokeAsImage()
+            }
         }
     }
     // Draw the current path on the canvas
@@ -161,11 +304,8 @@ class ViewController: UIViewController, UITextFieldDelegate{
         canvasView.layer.addSublayer(strokeLayer)
     }
     func drawWordForm(screenwidth:CGFloat,screenheight:CGFloat){
-        var wordlength:CGFloat = 75
         var bottomlength:CGFloat = 20.0
         var rightlength:CGFloat = 10.0
-        var rowwordnum=8
-        var colwordnum=12
         var formLineWidth:CGFloat = 1
         var toplength:CGFloat = (screenheight-CGFloat(colwordnum)*wordlength)/2
         var leftlength:CGFloat = (screenwidth-CGFloat(rowwordnum)*wordlength)/2
@@ -191,15 +331,36 @@ class ViewController: UIViewController, UITextFieldDelegate{
         
         formLayer.path = formPath.cgPath
         canvasView.layer.addSublayer(formLayer)
-        for index in 1...rowwordnum{
-            let image = UIImage(named: String(index))
-            let imageLayer = CALayer()
-            imageLayer.backgroundColor = UIColor.clear.cgColor
-            imageLayer.bounds = CGRect(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2,width:wordlength-5, height:wordlength-5)
-            imageLayer.position = CGPoint(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2)
-            imageLayer.contents =  image?.cgImage
-            canvasView.layer.addSublayer(imageLayer)
+        var count:Int = 1
+        if goalStrings != []
+        {
+            for imagebase64 in goalStrings{
+                let dataDecoded : Data = Data(base64Encoded: imagebase64, options: .ignoreUnknownCharacters)!
+                let image = UIImage(data: dataDecoded)
+                let imageLayer = CALayer()
+                imageLayer.backgroundColor = UIColor.clear.cgColor
+                imageLayer.bounds = CGRect(x:leftlength+wordlength*(CGFloat(count-1)+0.5),y:toplength+wordlength/2,width:wordlength-5, height:wordlength-5)
+                imageLayer.position = CGPoint(x:leftlength+wordlength*(CGFloat(count-1)+0.5),y:toplength+wordlength/2)
+                imageLayer.contents =  image?.cgImage
+                canvasView.layer.addSublayer(imageLayer)
+                count+=1
+            }
         }
+        else
+        {
+            print(rowwordnum)
+            for index in 1...rowwordnum{
+                let image = UIImage(named:String(index)+".png")
+                let imageLayer = CALayer()
+                imageLayer.backgroundColor = UIColor.clear.cgColor
+                imageLayer.bounds = CGRect(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2,width:wordlength-5, height:wordlength-5)
+                imageLayer.position = CGPoint(x:leftlength+wordlength*(CGFloat(index-1)+0.5),y:toplength+wordlength/2)
+                imageLayer.contents =  image?.cgImage
+                canvasView.layer.addSublayer(imageLayer)
+                count+=1
+            }
+        }
+        
         
         let dashLineLayer = CAShapeLayer()
         dashLineLayer.strokeColor = UIColor.systemBlue.cgColor
@@ -233,6 +394,7 @@ class ViewController: UIViewController, UITextFieldDelegate{
                    ctx.cgContext.addRect(CGRect(origin: .zero, size: self.viewsize))
                    ctx.cgContext.drawPath(using: .fill)
                    let bez = drawingPaths.last
+                   
                    ctx.cgContext.setFillColor(UIColor.clear.cgColor)
                    ctx.cgContext.setStrokeColor(strokeColor.cgColor)
                    ctx.cgContext.setLineWidth(lineWidth)
@@ -259,21 +421,41 @@ class ViewController: UIViewController, UITextFieldDelegate{
                            print("出现错误：\(error?.localizedDescription ?? "未知错误")")
                            return
                        }
-                       
-            if let image = UIImage(data: data) {
-                       // 在主线程中更新 UI
-                       DispatchQueue.main.async {
-                           let imageLayer = CALayer()
-                           imageLayer.backgroundColor = UIColor.clear.cgColor
-                           imageLayer.bounds = CGRect(x:0, y: 0 , width: self.viewwidth, height:self.viewheight)
-                           imageLayer.position = CGPoint(x:self.viewwidth/2,y:self.viewheight/2)
-                           imageLayer.contents =  image.cgImage
-                           self.canvasView.layer.addSublayer(imageLayer)
-                       }
-                   } else {
-                           print(data)
-                           print("无法将接收到的数据转换为图像")
-                       }
+            let decoder = JSONDecoder()
+                        do {
+                            let stroke = try decoder.decode(Stroke.self, from: data)
+//                            print(stroke)
+                            DispatchQueue.main.async {
+                                let imageLayer = CALayer()
+                                imageLayer.backgroundColor = UIColor.clear.cgColor
+                                imageLayer.bounds = CGRect(x: 0, y:0,width:stroke.width, height:stroke.height)
+//                                imageLayer.position = CGPoint(x:self.startLocation.x+(self.finalLocation.x-self.startLocation.x)/2, y: self.startLocation.y+(self.finalLocation.y-self.startLocation.y)/2)
+                                imageLayer.position = CGPoint(x:stroke.xPosition, y:stroke.yPosition)
+                                let dataDecoded : Data = Data(base64Encoded:stroke.image, options: .ignoreUnknownCharacters)!
+                                let image = UIImage(data: dataDecoded)
+                                imageLayer.contents =  image?.cgImage
+                                self.canvasView.layer.addSublayer(imageLayer)
+                            }
+                        }
+                        catch {
+                            print(error)
+                        }
+//            if let image = UIImage(data: data) {
+//                       // 在主线程中更新 UI
+//                       DispatchQueue.main.async {
+//                           let imageLayer = CALayer()
+//                           imageLayer.backgroundColor = UIColor.clear.cgColor
+//                           imageLayer.bounds = CGRect(x:0, y: 0 , width: self.viewwidth, height:self.viewheight)
+//                           imageLayer.position = CGPoint(x:self.viewwidth/2,y:self.viewheight/2)
+//                           imageLayer.contents =  image.cgImage
+//                           self.canvasView.layer.addSublayer(imageLayer)
+//                       }
+//                   }
+//
+//            else{
+//                print(data)
+//                print("无法将接收到的数据转换为图像")
+//            }
             
         }).resume()
 //        UIImageWriteToSavedPhotosAlbum(newImg, nil, nil, nil)
@@ -336,7 +518,23 @@ class ViewController: UIViewController, UITextFieldDelegate{
         drawingPaths.removeAll() // 移除所有筆劃
         canvasView.layer.sublayers = nil // 移除所有已繪製的筆劃圖層
     }
-    // Action to save the last stroke as an image
+    func setupconfirmButton(){
+        let setImage = UIImage(systemName: "gearshape")
+        self.view.addSubview(settingButton)
+        settingButton.configuration = .filled()
+        settingButton.configuration?.baseBackgroundColor = .systemBlue
+        settingButton.configuration?.image=setImage
+        settingButton.addTarget(self, action: #selector(receivedata), for: .touchDown)
+    }
+    @objc func receivedata(){
+        let destinationVC = setViewController()
+        destinationVC.delegate = self
+        present(destinationVC, animated: true, completion: nil)
+    }
+    func hideDetailViewController() {
+           dismiss(animated: true, completion: nil)
+       }
+
     
 }
 

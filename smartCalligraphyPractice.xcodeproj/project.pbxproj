@@ -18,6 +18,8 @@
 		EA9AA50F2AE65A5A005D4B64 /* smartCalligraphyPracticeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA50E2AE65A5A005D4B64 /* smartCalligraphyPracticeTests.swift */; };
 		EA9AA5192AE65A5A005D4B64 /* smartCalligraphyPracticeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA5182AE65A5A005D4B64 /* smartCalligraphyPracticeUITests.swift */; };
 		EA9AA51B2AE65A5A005D4B64 /* smartCalligraphyPracticeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA51A2AE65A5A005D4B64 /* smartCalligraphyPracticeUITestsLaunchTests.swift */; };
+		EAA5A4372AFAB16600EB2D6D /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5A4352AFAB16600EB2D6D /* LoadingViewController.swift */; };
+		EAA5A4382AFAB16600EB2D6D /* LoadingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EAA5A4362AFAB16600EB2D6D /* LoadingViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		EA9AA5142AE65A5A005D4B64 /* smartCalligraphyPracticeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = smartCalligraphyPracticeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA9AA5182AE65A5A005D4B64 /* smartCalligraphyPracticeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = smartCalligraphyPracticeUITests.swift; sourceTree = "<group>"; };
 		EA9AA51A2AE65A5A005D4B64 /* smartCalligraphyPracticeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = smartCalligraphyPracticeUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		EAA5A4352AFAB16600EB2D6D /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
+		EAA5A4362AFAB16600EB2D6D /* LoadingViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,8 @@
 				EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */,
 				EA6B18B32AEFE1B1004DAA91 /* tabController.swift */,
 				EA9AA5002AE65A5A005D4B64 /* Assets.xcassets */,
+				EAA5A4352AFAB16600EB2D6D /* LoadingViewController.swift */,
+				EAA5A4362AFAB16600EB2D6D /* LoadingViewController.xib */,
 				EA6B18B52AEFFEDF004DAA91 /* setViewController.swift */,
 				EA6B18B72AEFFEF8004DAA91 /* setwordViewController.swift */,
 				EA9AA5022AE65A5A005D4B64 /* LaunchScreen.storyboard */,
@@ -237,6 +243,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAA5A4382AFAB16600EB2D6D /* LoadingViewController.xib in Resources */,
 				EA9AA5042AE65A5A005D4B64 /* LaunchScreen.storyboard in Resources */,
 				EA9AA5012AE65A5A005D4B64 /* Assets.xcassets in Resources */,
 			);
@@ -263,6 +270,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAA5A4372AFAB16600EB2D6D /* LoadingViewController.swift in Sources */,
 				EA9AA4FC2AE65A58005D4B64 /* ViewController.swift in Sources */,
 				EA6B18B42AEFE1B1004DAA91 /* tabController.swift in Sources */,
 				EA9AA4F82AE65A58005D4B64 /* AppDelegate.swift in Sources */,
