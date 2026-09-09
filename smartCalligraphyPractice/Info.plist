@@ -6,7 +6,7 @@
 	     iOS 預設的 App Transport Security 會直接擋掉非 HTTPS 連線，
 	     這裡只針對這一個 IP 開例外，不是整個 App 都允許不安全連線
 	     （NSAllowsArbitraryLoads）。之後 API 那邊有網域、上了 HTTPS
-	     （見 smart-calligraphy-api README 的技術選型說明）就可以把這段拿掉。 -->
+	     就可以把這段拿掉。 -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

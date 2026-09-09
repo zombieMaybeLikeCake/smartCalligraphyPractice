@@ -1,15 +1,21 @@
 # smartCalligraphyPractice
 
-用 Apple Pencil／手指在畫布上寫字，呼叫後端 [smart-calligraphy-api](../smart-calligraphy-api) 的 zi2zi 風格轉換模型，顯示生成結果。iOS App，畫面完全用程式碼佈局（沒有 storyboard）。
+書法練字 iOS App。練字格模式下顯示目標字，用手指/Apple Pencil 逐筆臨摹，**每畫完一筆**就即時把那一筆送到後端 [smart-calligraphy-api](../smart-calligraphy-api) 做風格轉換、疊回畫布上——不是整字一次送出。也可以打字直接生成練字格模板。畫面完全用程式碼佈局（沒有 storyboard）。
 
-> 後端模型權重原本放在這個資料夾裡（`3000_net_D.pth`、`6000_net_D.pth`），2026-09-09 已經整組搬到獨立的 `smart-calligraphy-api` repo 部署成 FastAPI 服務；`word and stroke net path` 那組 Google Drive 連結目前只用來取得 stroke 模型的 checkpoint，跟這個 iOS App 本身無關，App 只透過 HTTP 打 API，不會在裝置上跑模型。
+> 2026-09-09：這份是真正做過、功能完整的版本，取代了同一天稍早我在完全空白的 Xcode 範本上重寫的簡化版（PencilKit 單一畫布，只有 `/predict/stroke`）。那份沒有被刪，還在 git 歷史裡，但不再是主線——這個 repo 原本被我誤判成空專案，實際上完整版本一直放在旁邊 `smartCalligraphyPractice-orignal` 這個沒進 git 的資料夾裡，直到使用者指出來才發現。
 
 ## 現況
 
-- `ViewController.swift`：PKCanvasView 手寫畫布、`word`/`stroke` 切換、送出/清除、顯示結果圖片與延遲
-- `CalligraphyAPIClient.swift`：純網路層，呼叫 `/predict/word`、`/predict/stroke`
+- `ViewController.swift`：練字格畫布（`drawWordForm`）、逐筆偵測（`touchesBegan/Moved/Ended`）、每畫完一筆呼叫 `/predict/stroke`
+- `setViewController.swift`：設定畫面（齒輪按鈕開啟）——想練的字（打字生成練字格）、字體風格選單（22 種，對應後端 `label`）、練字框大小/格數、字帖模式開關、筆畫預測開關、顏色選擇器
+- `CalligraphyAPIClient.swift`：純網路層，呼叫 `/predict/word`、`/predict/stroke`、`/synthesize/word`、`/synthesize/stroke`
 - `APIConfig.swift`：API 網址、Key 集中設定的地方
-- **這幾個檔案是在沒有 Mac／Xcode 的環境下用純文字編輯器寫的，沒有實際 build 過**——語法我逐行檢查過，但沒有編譯器把關，第一次在 Xcode 打開務必先 ⌘B build 一次，有錯誤很正常，不是你操作有問題。
+- `LoadingViewController.swift` + `.xib`：等待指示器，目前程式碼裡是建好但沒有實際掛上去顯示（原本呼叫端都被註解掉了）
+- `tabController.swift`、`setwordViewController.swift`：沒有被用到的舊嘗試，`SceneDelegate` 的 root view controller 是 `ViewController` 不是 `tabController`，這兩個檔案編譯得過但沒有任何東西會實際執行到
+
+**已知限制**：
+- **混合字體（blender）功能接不了**：`setViewController` 裡的混合比例滑桿是舊 UI 保留下來的，後端 `model/model.py` 從來沒有真的實作過 `blender()` 這個方法（跟原本 `singalsample()` 缺失是同一類問題），選了也不會有效果。
+- **這幾個檔案在沒有 Mac／Xcode 的環境下用純文字編輯器改的，沒有實際 build 過**——語法逐行檢查過，但沒有編譯器把關，第一次在 Xcode 打開務必先 ⌘B build 一次，有錯誤很正常，不是你操作有問題。
 
 ## 在 Xcode 打開
 
@@ -29,3 +35,5 @@
 ## 連線設定
 
 `APIConfig.swift` 裡的網址跟 API Key 對應 `smart-calligraphy-api` README 的 Live Demo 那組——那組 key 是展示用、會不定期輪替，換了記得同步改這裡。`Info.plist` 裡加了一條只針對這個 IP 的 ATS 例外（App Transport Security），因為 API 目前是明文 HTTP、沒有網域也沒有 HTTPS；之後如果照 `smart-calligraphy-api` README 的技術選型說明接上 HTTPS，這條例外設定可以拿掉。
+
+風格（label）、顏色（RGBA）現在是**每次請求**跟著 `/predict/*`、`/synthesize/*` 一起送——舊版是先用一個獨立的 GET 請求改伺服器端的全域狀態，這在新 API（無狀態）底下行不通，改成 `setViewController` 選好之後透過 `setvalue()` 傳回 `ViewController`，存在 `currentLabel`/`currentColor`，每次畫完一筆才用上。
