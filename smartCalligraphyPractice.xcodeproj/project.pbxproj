@@ -10,6 +10,8 @@
 		EA9AA4F82AE65A58005D4B64 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */; };
 		EA9AA4FA2AE65A58005D4B64 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */; };
 		EA9AA4FC2AE65A58005D4B64 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */; };
+		D8190E9C7DF5782AAB574A94 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2C06BF29AC0ABBA311B266 /* APIConfig.swift */; };
+		A186EED9436CD52A97421627 /* CalligraphyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2D7FF91330FC4F30D8F6F /* CalligraphyAPIClient.swift */; };
 		EA9AA5012AE65A5A005D4B64 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA9AA5002AE65A5A005D4B64 /* Assets.xcassets */; };
 		EA9AA5042AE65A5A005D4B64 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA9AA5022AE65A5A005D4B64 /* LaunchScreen.storyboard */; };
 		EA9AA50F2AE65A5A005D4B64 /* smartCalligraphyPracticeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9AA50E2AE65A5A005D4B64 /* smartCalligraphyPracticeTests.swift */; };
@@ -39,6 +41,8 @@
 		EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BF2C06BF29AC0ABBA311B266 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
+		EBB2D7FF91330FC4F30D8F6F /* CalligraphyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalligraphyAPIClient.swift; sourceTree = "<group>"; };
 		EA9AA5002AE65A5A005D4B64 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA9AA5032AE65A5A005D4B64 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EA9AA5052AE65A5A005D4B64 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,6 +104,8 @@
 				EA9AA4F72AE65A58005D4B64 /* AppDelegate.swift */,
 				EA9AA4F92AE65A58005D4B64 /* SceneDelegate.swift */,
 				EA9AA4FB2AE65A58005D4B64 /* ViewController.swift */,
+				BF2C06BF29AC0ABBA311B266 /* APIConfig.swift */,
+				EBB2D7FF91330FC4F30D8F6F /* CalligraphyAPIClient.swift */,
 				EA9AA5002AE65A5A005D4B64 /* Assets.xcassets */,
 				EA9AA5022AE65A5A005D4B64 /* LaunchScreen.storyboard */,
 				EA9AA5052AE65A5A005D4B64 /* Info.plist */,
@@ -257,6 +263,8 @@
 				EA9AA4FC2AE65A58005D4B64 /* ViewController.swift in Sources */,
 				EA9AA4F82AE65A58005D4B64 /* AppDelegate.swift in Sources */,
 				EA9AA4FA2AE65A58005D4B64 /* SceneDelegate.swift in Sources */,
+				D8190E9C7DF5782AAB574A94 /* APIConfig.swift in Sources */,
+				A186EED9436CD52A97421627 /* CalligraphyAPIClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

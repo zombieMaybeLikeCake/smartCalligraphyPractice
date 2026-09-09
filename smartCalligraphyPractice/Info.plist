@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- API 目前是明文 HTTP + 純 IP（見 APIConfig.swift），沒有 HTTPS。
+	     iOS 預設的 App Transport Security 會直接擋掉非 HTTPS 連線，
+	     這裡只針對這一個 IP 開例外，不是整個 App 都允許不安全連線
+	     （NSAllowsArbitraryLoads）。之後 API 那邊有網域、上了 HTTPS
+	     （見 smart-calligraphy-api README 的技術選型說明）就可以把這段拿掉。 -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>136.67.17.108</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
 	<key>LaunchScreen</key>
 	<string>LaunchScreen</string>
 	<key>UIApplicationSceneManifest</key>
