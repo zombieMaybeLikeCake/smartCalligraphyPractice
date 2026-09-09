@@ -10,7 +10,7 @@ struct imagedata: Codable {
     let data: [String]
 }
 protocol setViewdelegat: AnyObject {
-    func setvalue(_ controller: setViewController,wordlengt:CGFloat,colnum:Int,words:[String],flag:Bool,strokefalg:Bool,label:Int,color:StrokeColor)
+    func setvalue(_ controller: setViewController,wordlengt:CGFloat,colnum:Int,words:[String],flag:Bool,strokefalg:Bool,label:Int,color:StrokeColor,blendLabel:Int?,blendRatio:Float)
 }
 class setViewController: UIViewController, UITextFieldDelegate,UIColorPickerViewControllerDelegate {
     
@@ -287,7 +287,8 @@ class setViewController: UIViewController, UITextFieldDelegate,UIColorPickerView
             producewordimage(goalword: self.goalString)
         }
         else{
-            delegate.setvalue(self, wordlengt: wordlength, colnum:colwordnum,words:goalStrings,flag:showFormFlag,strokefalg: showStroke,label: nowstyle,color: currentStrokeColor)
+            let blend = currentBlend
+            delegate.setvalue(self, wordlengt: wordlength, colnum:colwordnum,words:goalStrings,flag:showFormFlag,strokefalg: showStroke,label: nowstyle,color: currentStrokeColor,blendLabel: blend?.label2,blendRatio: blend?.ratio ?? 0)
                     dismiss(animated: true)
         }
 //        print(goalwordimagebase64)
@@ -331,9 +332,12 @@ class setViewController: UIViewController, UITextFieldDelegate,UIColorPickerView
     /// saveLastStrokeAsImage() 跟這個檔案的 producewordimage()），這裡
     /// 不用再打任何網路請求，nowstyle 這個 instance var 本身已經夠用。
     ///
-    /// blender（混合字體）目前無法接：後端 model/model.py 從來沒有真的
-    /// 實作過 blender()，這個 UI 滑桿選了也不會有效果——已知限制，不是
-    /// 這裡漏接，之後後端補了再回來接。
+    /// blender（混合字體）2026-09-09 已經接上：後端 model/model.py 本來就
+    /// 沒有 blender() 這個方法本體（查證過，舊版 strokeStytleChangeServer.py
+    /// 呼叫的那個方法連定義都找不到），但 app/inference.py 補了
+    /// predict_blend() 重建同樣的效果（兩個風格 embedding 依比率內插），
+    /// 這裡的滑桿選出來的 blenderstytleindex／rationum 現在真的會送到
+    /// API，見 currentBlend 這個 computed var。
     func transmitstyle(){
     }
     /// 同上，顏色現在是每次請求帶著送（見 currentStrokeColor），不用
@@ -350,6 +354,13 @@ class setViewController: UIViewController, UITextFieldDelegate,UIColorPickerView
             alpha: strokecolorInts[3]
         )
     }
+    /// blenderstytleindex 是 blender 陣列（"無" + 22 種風格）裡選到的 index，
+    /// 0＝無混合。轉成 CalligraphyAPIClient.StyleBlend 給 API 用時要減 1，
+    /// 因為 style 陣列（後端 label 真正對應的那份）沒有「無」這個項目。
+    var currentBlend: StyleBlend? {
+        guard blenderstytleindex != 0 else { return nil }
+        return StyleBlend(label2: blenderstytleindex - 1, ratio: rationum)
+    }
     /// 打字生成練字格：文字先用字型畫成圖，再送進模型，對應後端
     /// /synthesize/word（原本是 GET "/?goalword=..."，回傳
     /// {"data":[String]} 純 base64 陣列；新的是 POST，回傳
@@ -357,20 +368,23 @@ class setViewController: UIViewController, UITextFieldDelegate,UIColorPickerView
     /// 取每個元素的 imageBase64，其餘欄位目前用不到，保留原本 [String]
     /// 傳給 ViewController.setvalue() 的介面，改動範圍降到最小）。
     func producewordimage(goalword: String) {
+        let blend = currentBlend
         Task {
             do {
                 let results = try await CalligraphyAPIClient.synthesize(
                     task: .word,
                     text: goalword,
                     label: nowstyle,
-                    color: currentStrokeColor
+                    color: currentStrokeColor,
+                    blend: blend
                 )
                 let images = results.map { $0.imageBase64 }
                 await MainActor.run {
                     delegate.setvalue(
                         self, wordlengt: wordlength, colnum: colwordnum, words: images,
                         flag: showFormFlag, strokefalg: showStroke,
-                        label: nowstyle, color: currentStrokeColor
+                        label: nowstyle, color: currentStrokeColor,
+                        blendLabel: blend?.label2, blendRatio: blend?.ratio ?? 0
                     )
                     dismiss(animated: true)
                 }

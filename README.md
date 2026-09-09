@@ -14,8 +14,9 @@
 - `tabController.swift`、`setwordViewController.swift`：沒有被用到的舊嘗試，`SceneDelegate` 的 root view controller 是 `ViewController` 不是 `tabController`，這兩個檔案編譯得過但沒有任何東西會實際執行到
 
 **已知限制**：
-- **混合字體（blender）功能接不了**：`setViewController` 裡的混合比例滑桿是舊 UI 保留下來的，後端 `model/model.py` 從來沒有真的實作過 `blender()` 這個方法（跟原本 `singalsample()` 缺失是同一類問題），選了也不會有效果。
 - **這幾個檔案在沒有 Mac／Xcode 的環境下用純文字編輯器改的，沒有實際 build 過**——語法逐行檢查過，但沒有編譯器把關，第一次在 Xcode 打開務必先 ⌘B build 一次，有錯誤很正常，不是你操作有問題。
+
+**2026-09-09 更新：混合字體（blender）接上了**。一開始判斷「後端沒實作過」是只看了目前 `model/model.py` 沒有 `def blender()`；後來使用者指出更早的 `strokeStytleChangeServer.py`（沒有 V2 字尾那支）確實呼叫過 `model.blender(...)`，查證後發現方法本體真的遺失了，但底層的兩風格 embedding 內插能力還在 `UNetGenerator` 裡。`smart-calligraphy-api` 補了 `predict_blend()` 重建這個功能，`setViewController` 的混合比例滑桿現在選了真的有效果——見 `CalligraphyAPIClient.swift` 的 `StyleBlend`、`ViewController.swift` 的 `currentBlendLabel`/`currentBlendRatio`。
 
 ## 在 Xcode 打開
 

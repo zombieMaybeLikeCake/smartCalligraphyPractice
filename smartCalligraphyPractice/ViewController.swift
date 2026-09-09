@@ -94,6 +94,11 @@ class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat, Det
     // 一個獨立請求改伺服器端全域狀態。
     var currentLabel: Int = 0
     var currentColor: StrokeColor = .black
+    // 混合字體：nil＝不混合。跟 currentLabel/currentColor 是同一批、從
+    // setViewController 傳回來的設定，見 setvalue() 跟 setViewController.swift
+    // 的 currentBlend。
+    var currentBlendLabel: Int? = nil
+    var currentBlendRatio: Float = 0
     override func viewDidLoad() {
         super.viewDidLoad()
 //
@@ -117,7 +122,7 @@ class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat, Det
         
 
     }
-    func setvalue( _ controller: setViewController,wordlengt:CGFloat,colnum:Int,words:[String],flag:Bool,strokefalg :Bool,label:Int,color:StrokeColor){
+    func setvalue( _ controller: setViewController,wordlengt:CGFloat,colnum:Int,words:[String],flag:Bool,strokefalg :Bool,label:Int,color:StrokeColor,blendLabel:Int?,blendRatio:Float){
         colwordnum=colnum
         wordlength=wordlengt
         goalStrings=words
@@ -125,6 +130,8 @@ class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat, Det
         showStroke=strokefalg
         currentLabel=label
         currentColor=color
+        currentBlendLabel=blendLabel
+        currentBlendRatio=blendRatio
 //        print(goalStrings)
 //        print(colnum)
 //        let urlString = IP+"/?goalword="+self.goalString
@@ -416,13 +423,15 @@ class ViewController: UIViewController, UITextFieldDelegate, setViewdelegat, Det
         // multipart/form-data + X-API-Key + label/color query 參數，
         // 打 /predict/stroke，回傳型別是 PredictResult（欄位跟舊的
         // Stroke 一樣，多了 inferenceMs）。
+        let blend: StyleBlend? = currentBlendLabel.map { StyleBlend(label2: $0, ratio: currentBlendRatio) }
         Task {
             do {
                 let result = try await CalligraphyAPIClient.predict(
                     task: .stroke,
                     image: newImg,
                     label: currentLabel,
-                    color: currentColor
+                    color: currentColor,
+                    blend: blend
                 )
                 await MainActor.run {
                     let imageLayer = CALayer()

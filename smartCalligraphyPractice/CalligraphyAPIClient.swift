@@ -54,6 +54,16 @@ struct StrokeColor {
     static let black = StrokeColor(red: 0, green: 0, blue: 0, alpha: 255)
 }
 
+/// 混合字體：對應後端 /predict/*、/synthesize/* 的 label2／blend_ratio
+/// 查詢參數（見 smart-calligraphy-api 的 app/inference.py predict_blend()）
+/// ——兩個風格的 embedding 依 ratio 線性內插，ratio=0 純目前風格、ratio=1
+/// 純 label2。舊版 setViewController.swift 的混合比率滑桿一直都在，只是
+/// 之前後端沒有實作，這裡接上去而已，不是新加的 UI。
+struct StyleBlend {
+    let label2: Int
+    let ratio: Float
+}
+
 enum APIClientError: LocalizedError {
     case invalidImage
     case invalidText
@@ -91,19 +101,23 @@ enum CalligraphyAPIClient {
         task: PredictTask,
         image: UIImage,
         label: Int = 0,
-        color: StrokeColor = .black
+        color: StrokeColor = .black,
+        blend: StyleBlend? = nil
     ) async throws -> PredictResult {
         guard let pngData = image.pngData() else {
             throw APIClientError.invalidImage
         }
 
-        guard let url = makeURL(path: "/predict/\(task.rawValue)", queryItems: [
+        var queryItems = [
             URLQueryItem(name: "label", value: String(label)),
             URLQueryItem(name: "red", value: String(color.red)),
             URLQueryItem(name: "green", value: String(color.green)),
             URLQueryItem(name: "blue", value: String(color.blue)),
             URLQueryItem(name: "alph", value: String(color.alpha)),
-        ]) else {
+        ]
+        queryItems.append(contentsOf: blendQueryItems(blend))
+
+        guard let url = makeURL(path: "/predict/\(task.rawValue)", queryItems: queryItems) else {
             throw APIClientError.network(URLError(.badURL))
         }
 
@@ -126,20 +140,24 @@ enum CalligraphyAPIClient {
         task: PredictTask,
         text: String,
         label: Int = 0,
-        color: StrokeColor = .black
+        color: StrokeColor = .black,
+        blend: StyleBlend? = nil
     ) async throws -> [SynthesizeCharResult] {
         guard !text.isEmpty else {
             throw APIClientError.invalidText
         }
 
-        guard let url = makeURL(path: "/synthesize/\(task.rawValue)", queryItems: [
+        var queryItems = [
             URLQueryItem(name: "text", value: text),
             URLQueryItem(name: "label", value: String(label)),
             URLQueryItem(name: "red", value: String(color.red)),
             URLQueryItem(name: "green", value: String(color.green)),
             URLQueryItem(name: "blue", value: String(color.blue)),
             URLQueryItem(name: "alph", value: String(color.alpha)),
-        ]) else {
+        ]
+        queryItems.append(contentsOf: blendQueryItems(blend))
+
+        guard let url = makeURL(path: "/synthesize/\(task.rawValue)", queryItems: queryItems) else {
             throw APIClientError.network(URLError(.badURL))
         }
 
@@ -152,6 +170,17 @@ enum CalligraphyAPIClient {
     }
 
     // MARK: - Shared helpers
+
+    /// blend 是 nil 就回空陣列——不帶 label2 給後端，等同完全不混合，
+    /// 跟現有的單一風格請求行為完全一樣（向後相容，見 main.py 的
+    /// label2: Optional[int] = None）。
+    private static func blendQueryItems(_ blend: StyleBlend?) -> [URLQueryItem] {
+        guard let blend = blend else { return [] }
+        return [
+            URLQueryItem(name: "label2", value: String(blend.label2)),
+            URLQueryItem(name: "blend_ratio", value: String(blend.ratio)),
+        ]
+    }
 
     private static func makeURL(path: String, queryItems: [URLQueryItem]) -> URL? {
         guard var components = URLComponents(
