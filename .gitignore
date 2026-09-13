@@ -1,0 +1,20 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+*.moved-aside
+*.hmap
+
+# CocoaPods / SPM
+Pods/
+.build/
+
+# macOS
+.DS_Store
+
+# 模型權重不進 git
+*.pth
+*.pt
+*.ckpt

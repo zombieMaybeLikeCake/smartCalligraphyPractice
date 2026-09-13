@@ -23,12 +23,12 @@ import time
 import io
 import json
 from io import BytesIO
-IP='192.168.0.103'
-PATH=r"C:\Users\robert\Desktop\zi2zi-pytorch-master\testsample"
-path=r"C:\Users\robert\Desktop\project\標楷體labelme\標楷體"
-savepath=r"C:\Users\robert\Desktop\zi2zi-pytorch-master\testsample"
-outpath=r"C:\Users\robert\Desktop\zi2zi-pytorch-master\testsample"
-result=r"C:\Users\robert\Desktop\zi2zi-pytorch-master\lab6\infer\finaloutput.png"
+IP='192.168.0.103'  # 舊版區網 IP，已不是主線
+PATH=r"<your-path>\zi2zi-pytorch-master\testsample"
+path=r"<your-path>\標楷體labelme\標楷體"
+savepath=r"<your-path>\zi2zi-pytorch-master\testsample"
+outpath=r"<your-path>\zi2zi-pytorch-master\testsample"
+result=r"<your-path>\zi2zi-pytorch-master\lab6\infer\finaloutput.png"
 experiment_dir="lab6"
 IsFirst=True
 nownum=0

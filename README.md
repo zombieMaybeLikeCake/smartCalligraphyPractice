@@ -18,6 +18,10 @@
 
 **2026-09-09 更新：混合字體（blender）接上了**。一開始判斷「後端沒實作過」是只看了目前 `model/model.py` 沒有 `def blender()`；後來使用者指出更早的 `strokeStytleChangeServer.py`（沒有 V2 字尾那支）確實呼叫過 `model.blender(...)`，查證後發現方法本體真的遺失了，但底層的兩風格 embedding 內插能力還在 `UNetGenerator` 裡。`smart-calligraphy-api` 補了 `predict_blend()` 重建這個功能，`setViewController` 的混合比例滑桿現在選了真的有效果——見 `CalligraphyAPIClient.swift` 的 `StyleBlend`、`ViewController.swift` 的 `currentBlendLabel`/`currentBlendRatio`。
 
+## 技術堆疊
+
+Swift、UIKit（純程式碼佈局，無 storyboard，`LaunchScreen` 除外）、`URLSession` 直接打 REST API（無額外網路套件）。後端見 [smart-calligraphy-api](../smart-calligraphy-api)。
+
 ## 在 Xcode 打開
 
 1. 用 Xcode 15 以上開 `smartCalligraphyPractice.xcodeproj`（專案是用 Xcode 14.3 建的，開啟時 Xcode 通常會自動把專案格式升級，跳出的提示都可以接受）

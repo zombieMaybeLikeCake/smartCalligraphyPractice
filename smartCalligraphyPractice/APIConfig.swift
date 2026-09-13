@@ -16,7 +16,8 @@ enum APIConfig {
     /// 透過 frp 對外的網址，見 zi2ziV2/smartCalligraphy_FastAPI_Docker_重構計畫.md
     /// 第 8 節。目前是明文 HTTP + IP，沒有網域也還沒上 HTTPS，這也是為什麼
     /// Info.plist 裡要另外加 ATS 例外，不然 iOS 會直接擋掉這個連線。
-    static let baseURL = URL(string: "http://136.67.17.108:8080")!
+    /// 展示/build 前填實際值——這裡故意不寫死真實網址/Key。
+    static let baseURL = URL(string: "http://your-frp-host.example:8080")!
 
-    static let apiKey = "jupd7_Nu3LEj3qJQhJNMt0TzkRHVU10ka4jDss862Js"
+    static let apiKey = ""
 }

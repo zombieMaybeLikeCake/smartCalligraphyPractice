@@ -4,14 +4,14 @@
 <dict>
 	<!-- API 目前是明文 HTTP + 純 IP（見 APIConfig.swift），沒有 HTTPS。
 	     iOS 預設的 App Transport Security 會直接擋掉非 HTTPS 連線，
-	     這裡只針對這一個 IP 開例外，不是整個 App 都允許不安全連線
+	     這裡只針對這一個網域開例外，不是整個 App 都允許不安全連線
 	     （NSAllowsArbitraryLoads）。之後 API 那邊有網域、上了 HTTPS
-	     就可以把這段拿掉。 -->
+	     就可以把這段拿掉。這個 key 要跟 APIConfig.swift 的 baseURL 主機名一致。 -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>136.67.17.108</key>
+			<key>your-frp-host.example</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
